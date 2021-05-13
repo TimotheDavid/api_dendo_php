@@ -1,0 +1,19 @@
+
+services:
+  db:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE}
+    ports:
+      - "${DB_PORT}:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - "8090:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PG_DEFAULT_MAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PG_DEFAULT_PASSWORD}
