@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserCollection;
+use App\Http\Resources\UserRessource;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -46,8 +49,7 @@ class UserController extends Controller
         $role = DB::table('roles')->select('label')->where('label','user')->get();
 
         try{
-
-            User::create([
+            Product::create([
                 'name' => $request->name,
                 'email' => $request-> email,
                 'password' => $request->password,
@@ -79,6 +81,7 @@ class UserController extends Controller
     {
 
         $user = DB::table('users')
+            ->where('users.id' , $id)
             ->leftJoin('roles', 'users.id', '=', 'roles.id')
             ->get();
 

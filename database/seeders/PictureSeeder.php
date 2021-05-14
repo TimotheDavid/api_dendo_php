@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class PictureSeeder extends Seeder
 {
@@ -13,6 +14,8 @@ class PictureSeeder extends Seeder
      */
     public function run()
     {
-
+            DB::table('pictures')->insert([
+                'path' => 'mountain_bike_nFvpT_syimT.jpg'
+            ]);
     }
 }
