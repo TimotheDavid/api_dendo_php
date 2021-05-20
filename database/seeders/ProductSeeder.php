@@ -19,8 +19,8 @@ class ProductSeeder extends Seeder
 
         for($i = 0; $i<10; $i++){
             DB::table('products')->insert([
-                'price_vat' => $faker->randomFloat(2),
-                'price_ttc' => $faker->randomFloat(2),
+                'price_vat' => $faker->numberBetween(0,1000),
+                'price_ttc' => $faker->numberBetween(0,1000),
                 'name' => $faker->name,
                 'description' => $faker->sentence,
                 'stock' => $faker->randomNumber(3, false),

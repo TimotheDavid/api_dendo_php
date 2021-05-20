@@ -18,10 +18,8 @@ class VerifyAccess
      */
     public function handle(Request $request, Closure $next, $role)
     {
-        print_r($role);
         try{
             $token = explode(' ',$request->header('Authorization'))[1];
-
 
             $user = DB::table('users')
                 ->where('token', $token)

@@ -30,7 +30,7 @@ class ProductTest extends TestCase
     }
 
     public function testGet(){
-        $this->get('api/product', APPLICATION)
+        $this->get('api/user/product', APPLICATION)
             ->assertStatus(200);
     }
 

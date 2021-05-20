@@ -9,11 +9,16 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Tymon\JWTAuth\JWTGuard;
-use function GuzzleHttp\Psr7\str;
+
 
 
 class AuthController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+    }
 
     /**
      * Get a JWT via given credentials.
@@ -32,7 +37,6 @@ class AuthController extends Controller
             return response()->json($validator->errors(),422);
         }
 
-
         try {
             if (!$token = auth()->attempt($validator->validated())) {
                 return response()->json(['error' => 'Unauthorized'], 401);
@@ -45,8 +49,6 @@ class AuthController extends Controller
         DB::table('users')->where('email', $request->email)->update([
             'token' => $token
         ]);
-
-
 
         return $this->createNewToken($token);
     }
@@ -64,30 +66,35 @@ class AuthController extends Controller
             'email' => 'required|string|email|max:100|unique:users',
             'password' => 'required|string|min:6',
             'c_password' => 'required|string|same:password',
+            'last' => 'required|string|between:2,100',
+            'role' => 'numeric'
         ]);
 
         if($validator->fails()){
             return response()->json($validator->errors(),400);
         }
+        $role = DB::table('roles')->select('id')->where('label', 'user')->get()[0];
+        if($request->role){
+           $role = $request->role;
+        }
 
         try {
-            $role = DB::table('roles')->where('label', 'user')->get()[0];
             $user = DB::table('users')->insert([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => bcrypt($request->password),
-                'role' => 1
+                'last' => $request->last,
+                'role' => $role
             ]);
+            return response()->json([
+                'response' => 'user created'
+            ], 201);
         } catch (\Exception $error ) {
             return response()->json([
                 'error' => $error
             ], 500);
         }
 
-        $user = DB::table('users')->where('email', $request->email)->get();
-        return response()->json([
-            'response' => 'User create successfully',
-        ], 201);
     }
     /**
      * Log the user out (Invalidate the token).

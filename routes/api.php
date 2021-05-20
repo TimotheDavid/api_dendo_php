@@ -23,35 +23,48 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });*/
 
-Route::group([
-    'middleware' => 'api',
-    'prefix' => 'auth'
+Route::prefix('auth')->middleware(['api','cors'])->group(
+    function ($router) {
+        Route::post('/login', [AuthController::class, 'login'])->name('login');
+        Route::post('/register', [AuthController::class, 'register'])->name('register');
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::post('/refresh', [AuthController::class, 'refresh']);
+        Route::get('/user-profile', [AuthController::class, 'userProfile']);
 
-], function ($router) {
-    Route::post('/login', [AuthController::class, 'login'])->name('login');
-    Route::post('/register', [AuthController::class, 'register'])->name('register');
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/refresh', [AuthController::class, 'refresh']);
-    Route::get('/user-profile', [AuthController::class, 'userProfile']);
+    });
+
+
+Route::prefix('admin')->middleware(['access:manager','cors'])->group(
+    function ($router){
+        Route::get('/user', [UserController::class, 'index']);
+        Route::get('/user/{id}', [UserController::class, 'show']);
+        Route::post('/user', [UserController::class, 'store']);
+        Route::delete('/user/{id}', [UserController::class, 'destroy']);
+        Route::put('/user/{id}', [UserController::class, 'update']);
+
+        // route for role
+        Route::get('/role',[RoleController::class, 'index']);
+        Route::get('/role/{id}', [RoleController::class, 'show']);
+        Route::post('/role', [RoleController::class, 'store']);
+        Route::delete('/role/{id}',[RoleController::class, 'destroy']);
+        Route::put('/role/{id}', [RoleController::class, 'update']);
+
+        Route::get('/product', [ProductController::class, 'index']);
+        Route::get('/product/{id}', [ProductController::class, 'show']);
+        Route::post('/product', [ProductController::class, 'store']);
+        Route::delete('/product/{id}', [ProductController::class, 'destroy']);
+        Route::put('/product/{id}', [RoleController::class, 'update']);
+        Route::post('/register', [AuthController::class, 'register']);
+    });
+
+Route::prefix('user')->middleware('cors')->group(function ($router){
+
+    Route::get('/user/{id}', [UserController::class, 'show']);
+    Route::get('/product', [ProductController::class, 'index']);
 
 });
 
 
-Route::get('/user', [UserController::class, 'index']);
-Route::get('/user/{id}', [UserController::class, 'show']);
-Route::post('/user', [UserController::class, 'store']);
-Route::delete('/user/{id}', [UserController::class, 'destroy']);
-Route::put('/user/{id}', [UserController::class, 'update']);
 
-// route for role
-Route::get('/role',[RoleController::class, 'index']);
-Route::get('/role/{id}', [RoleController::class, 'show']);
-Route::post('/role', [RoleController::class, 'store']);
-Route::delete('/role/{id}',[RoleController::class, 'destroy']);
-Route::put('/role/{id}', [RoleController::class, 'update']);
 
-Route::get('/product', [ProductController::class, 'index']);
-Route::get('/product/{id}', [ProductController::class, 'show']);
-Route::post('/product', [ProductController::class, 'store']);
-Route::delete('/product/{id}', [ProductController::class, 'destroy']);
-Route::put('/product/{id}', [RoleController::class, 'update']);
+

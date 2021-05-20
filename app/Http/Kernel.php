@@ -44,6 +44,9 @@ class Kernel extends HttpKernel
             'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
+        'access' => [
+            \App\Http\Middleware\VerifyAccess::class
+        ]
     ];
 
     /**
@@ -65,7 +68,8 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'auth.jwt' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
         'jwt.refresh' => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class,
-        'access' => \App\Http\Middleware\VerifyAccess::class
+        'access' => \App\Http\Middleware\VerifyAccess::class,
+        'cors' => \App\Http\Middleware\Cors::class
 
     ];
 }

@@ -17,8 +17,7 @@ class ProductController extends Controller
     {
         $product = DB::table('products')
             ->leftJoin('pictures', 'products.picture',  '=' , 'pictures.id')
-            ->get();
-
+                ->get(['products.*','pictures.path' ]);
         return response()->json([
             'response' => $product
         ]);

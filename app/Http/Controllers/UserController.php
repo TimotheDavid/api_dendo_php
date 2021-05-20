@@ -19,8 +19,8 @@ class UserController extends Controller
     public function index()
     {
         $user = DB::table('users')
-            ->leftJoin('roles', 'users.id', '=', 'roles.id')
-            ->get();
+            ->leftJoin('roles', 'users.role', '=', 'roles.id')
+            ->get(['users.*', 'roles.label']);
 
         return response()->json([
             'response' => $user
@@ -82,7 +82,7 @@ class UserController extends Controller
 
         $user = DB::table('users')
             ->where('users.id' , $id)
-            ->leftJoin('roles', 'users.id', '=', 'roles.id')
+            ->leftJoin('roles', 'users.role', '=', 'roles.id')
             ->get();
 
         return response()->json([
@@ -112,19 +112,21 @@ class UserController extends Controller
     public function update(Request $request,int $id)
     {
         try {
-            $user = User::find($id);
-            $user->name = $request->name;
-            $user->email = $request->email;
-            $user->password = $request->password;
-            $user->save();
-           return response()->json([],204);
+           $response =  DB::table('users')->where('id', $id)->update([
+               'name' => $request->name,
+               'role' => $request->role,
+                'last' => $request->last,
+                'email' => $request->email,
+                'password' => $request->password,
+
+            ]);
+           return response()->json($response,204);
 
         }catch (\Exception $error){
             return response()->json([
                 'error' => $error
             ],500);
         }
-
     }
 
     /**

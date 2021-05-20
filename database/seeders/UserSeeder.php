@@ -19,7 +19,8 @@ class UserSeeder extends Seeder
         $faker = Faker::create();
         for($i = 0 ; $i< 10; $i++) {
             DB::table('users')->insert([
-                'name' => $faker->name(),
+                'name' => $faker->firstName,
+                'last' => $faker->lastName,
                 'email' => $faker->email,
                 'password' => $faker->password,
                 'role' => rand(1,3)
