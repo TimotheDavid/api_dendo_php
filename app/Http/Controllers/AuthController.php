@@ -73,13 +73,12 @@ class AuthController extends Controller
         if($validator->fails()){
             return response()->json($validator->errors(),400);
         }
-        $role = DB::table('roles')->select('id')->where('label', 'user')->get()[0];
+        $role = DB::table('roles')->select('id')->where('label', 'user')->get()[0]->id;
         if($request->role){
-           $role = $request->role;
+            $role = $request->role;
         }
-
         try {
-            $user = DB::table('users')->insert([
+            DB::table('users')->insert([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => bcrypt($request->password),
@@ -91,8 +90,9 @@ class AuthController extends Controller
             ], 201);
         } catch (\Exception $error ) {
             return response()->json([
-                'error' => $error
-            ], 500);
+                'error' => $error,
+                'errors' => 'an error occurre'
+            ]);
         }
 
     }

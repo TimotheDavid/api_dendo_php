@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
             PictureSeeder::class,
             UserSeeder::class,
             ProductSeeder::class,
+            OrdersSeeder::class,
+            OrderLinesSeeder::class,
 
         ]);
 

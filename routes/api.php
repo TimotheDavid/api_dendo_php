@@ -1,12 +1,14 @@
 <?php
 error_reporting(E_ALL);
 
+use App\Http\Controllers\Pay;
 use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\UserController as UserController;
 use \App\Http\Controllers\RoleController as RoleController;
 use \App\Http\Controllers\AuthController as AuthController;
+use \App\Http\Controllers\OrderLinesController as OrderLinesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +32,7 @@ Route::prefix('auth')->middleware(['api','cors'])->group(
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::post('/refresh', [AuthController::class, 'refresh']);
         Route::get('/user-profile', [AuthController::class, 'userProfile']);
+        Route::post('/pay', [Pay::class, 'pay']);
 
     });
 
@@ -55,6 +58,13 @@ Route::prefix('admin')->middleware(['access:manager','cors'])->group(
         Route::delete('/product/{id}', [ProductController::class, 'destroy']);
         Route::put('/product/{id}', [RoleController::class, 'update']);
         Route::post('/register', [AuthController::class, 'register']);
+
+
+        Route::get('/order-line', [OrderLinesController::class, 'index']);
+        Route::get('/order-line/{id}', [OrderLinesController::class, 'show']);
+        Route::post('/order-line', [OrderLinesController::class, 'store']);
+        Route::delete('/order-line/{id}', [OrderLinesController::class, 'destroy']);
+        Route::put('/order-line/{id}', [OrderLinesController::class, 'update']);
     });
 
 Route::prefix('user')->middleware('cors')->group(function ($router){
@@ -63,7 +73,6 @@ Route::prefix('user')->middleware('cors')->group(function ($router){
     Route::get('/product', [ProductController::class, 'index']);
 
 });
-
 
 
 
