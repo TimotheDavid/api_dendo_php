@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
@@ -41,6 +42,22 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+
+        $validator = Validator::make($request->all(), [
+            'price_vat' => 'float|required',
+            'price_ttc' => 'float|required',
+            'name' => 'string|required',
+            'description' => 'string',
+            'stock' => 'integer|required',
+            'focus' => 'boolean',
+            'place' => 'integer',
+            'rank' => 'integer',
+            'picture' => 'integer'
+        ]);
+
+        if($validator->fails()){
+            return response()->json($validator->errors(), 500);
+        }
         try {
             Product::create([
                 'price_vat' => $request->price_vat,
@@ -56,7 +73,9 @@ class ProductController extends Controller
             return  response()->json([], 201);
 
         }catch (\Exception $error){
-            return response()->json([], 500);
+            return response()->json([
+                'error' => $request
+            ], 500);
         }
     }
 
@@ -128,7 +147,12 @@ class ProductController extends Controller
      */
     public function destroy(int $id)
     {
+
+
         try{
+
+            DB::table('order_lines')->where('products', $id)->update(['products' => 1]);
+
             DB::table('products')->where('id',$id)->delete();
             return response()->json(null, 204);
 

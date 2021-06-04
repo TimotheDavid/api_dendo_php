@@ -15,7 +15,8 @@ class Orders extends Model
 
     protected $fillable = [
         'amount_vat',
-        'amount_ttc'
+        'amount_ttc',
+        'done'
     ];
 
     public function user(): HasOne

@@ -37,7 +37,7 @@ class VerifyAccess
             return $next($request);
 
         }catch (\Exception $error){
-            return response()->json(null, 401);
+            return response()->json($error, 401);
 
         }
     }

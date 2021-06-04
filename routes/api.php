@@ -56,7 +56,8 @@ Route::prefix('admin')->middleware(['access:manager','cors'])->group(
         Route::get('/product/{id}', [ProductController::class, 'show']);
         Route::post('/product', [ProductController::class, 'store']);
         Route::delete('/product/{id}', [ProductController::class, 'destroy']);
-        Route::put('/product/{id}', [RoleController::class, 'update']);
+        Route::put('/product/{id}', [ProductController::class, 'update']);
+
         Route::post('/register', [AuthController::class, 'register']);
 
 
@@ -73,6 +74,14 @@ Route::prefix('user')->middleware('cors')->group(function ($router){
     Route::get('/product', [ProductController::class, 'index']);
 
 });
+
+Route::prefix('vendor')->middleware(['access:vendor','cors'])->group(
+    function ($router){
+        Route::put('/order-line/{id}', [OrderLinesController::class, 'accept']);
+        Route::post('/order/{id}', [Orders::class, ['accept']]);
+        Route::get('/order-line', [OrderLinesController::class, 'index']);
+    }
+);
 
 
 

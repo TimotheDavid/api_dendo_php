@@ -18,6 +18,7 @@ class CreateOrderLinesTable extends Migration
             $table->timestamps();
             $table->float('price_vat',6);
             $table->integer('stock');
+            $table->boolean('done');
             $table->foreignId('orders')->references('id')->on('orders');
             $table->foreignId('products')->references('id')->on('products');
         });

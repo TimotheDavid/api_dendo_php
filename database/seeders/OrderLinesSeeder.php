@@ -22,6 +22,7 @@ class OrderLinesSeeder extends Seeder
                 'stock' => $faker->numberBetween(0,10000),
                 'products' => $faker->numberBetween(1,10),
                 'orders' => $faker->numberBetween(1,10),
+                'done' => $faker->boolean
             ]);
 
         }

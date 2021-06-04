@@ -7,7 +7,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Validator;
+use Illuminate\Support\Facades\Validator as ValidatorAlias;
+use Illuminate\Validation\Validator as Validator;
+use function response as response;
 
 class OrderLinesController extends Controller
 {
@@ -16,12 +18,12 @@ class OrderLinesController extends Controller
      *
      * @return JsonResponse
      */
-    public function index()
+    public function index(): JsonResponse
     {
         $orderLines = DB::table('order_lines')
             ->leftJoin('orders', 'order_lines.orders', '=', 'orders.id')
             ->leftJoin('users','orders.user', '=', 'users.id')
-            ->get(['order_lines.*','orders.amount_vat', 'orders.amount_ttc', 'users.name', 'users.last', 'users.last','users.email', 'users.id as user_id']);
+            ->get(['order_lines.*','orders.amount_vat', 'orders.amount_ttc' , 'orders.done as orders_done', 'users.name', 'users.last', 'users.last','users.email', 'users.id as user_id']);
 
         return response()->json([
             'response' => $orderLines
@@ -30,7 +32,7 @@ class OrderLinesController extends Controller
 
     /**
      * Show the form for creating a new resource.
-     *
+     *!
      * @return JsonResponse
      *@return JsonResponse
      *
@@ -46,7 +48,7 @@ class OrderLinesController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
         try{
             DB::table('order_lines')->insert([
@@ -71,7 +73,7 @@ class OrderLinesController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function show(int $id)
+    public function show(int $id): JsonResponse
     {
 
         if (is_numeric($id)) {
@@ -108,54 +110,88 @@ class OrderLinesController extends Controller
      * @param int $id
      * @return JsonResponse
      */
-    public function update(Request $request, int $id)
+    public function update(Request $request, int $id): JsonResponse
     {
-        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
-                'price_vat' => 'required|integer',
-                'stock' => 'required|integer',
-                'orders' => 'required|integer',
-                'products' => 'required|integer',
+        $validator = ValidatorAlias::make($request->all(), [
+            'price_vat' => 'required|integer',
+            'stock' => 'required|integer',
+            'orders' => 'required|integer',
+            'products' => 'required|integer',
         ]);
 
         if($validator->fails()){
-            \response()->json($validator->errors(),400);
+            response()->json($validator->errors(),400);
         }
 
         if(!is_numeric($id)){
-            \response()->json(null, 403);
+            response()->json(null, 403);
         }
 
 
         try{
             DB::table('order_lines')->where('id', $id)->update([
-               'price_vat' => $request->price_vat,
-               'stock' => $request->stock,
+                'price_vat' => $request->price_vat,
+                'stock' => $request->stock,
                 'orders' => $request->orders,
                 'products' => $request->products
             ]);
-                return \response()->json(null,204);
+            return response()->json(null,204);
         }catch ( \Exception $error){
-            return \response()->json($error,500);
+            return response()->json($error,500);
         }
     }
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @param OrderLines $orderLines
+     * @param int $id
      * @return JsonResponse
      */
-    public function destroy(int $id)
+    public function destroy(int $id): JsonResponse
     {
         if(is_numeric($id)) {
             try {
                 DB::table('order_lines')->where('id', $id)->delete();
-                return \response()->json(null,200);
+                return response()->json(null,200);
             } catch (\Exception $error) {
                 return response()->json(null,500);
             }
         }else{
-            return \response()->json(null,403);
+            return response()->json(null,403);
         }
+    }
+
+    /**
+     * Update the done parameter to make it done by the vendor
+     * @param int $id
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function accept(int $id, Request  $request): JsonResponse
+    {
+
+        $validator = ValidatorAlias::make($request->all(), [
+            'done' => 'boolean|required'
+        ]);
+
+        if($validator->fails()){
+            response()->json([
+                'error' => 'is not a boolean'
+            ],500);
+        }
+
+        try{
+            DB::table('order-lines')->where('id', $id)->update([
+                'done' => $request->done,
+            ]);
+            response()->json([],204);
+
+        }catch (\Exception $error){
+            response()->json([
+                'error' => $error
+            ],500);
+        }
+
+
+
     }
 }

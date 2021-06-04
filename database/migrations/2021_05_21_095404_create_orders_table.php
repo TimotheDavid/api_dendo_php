@@ -18,6 +18,7 @@ class CreateOrdersTable extends Migration
             $table->timestamps();
             $table->float('amount_vat', 6);
             $table->float('amount_ttc', 6);
+            $table->boolean('done');
             $table->foreignId('user')->references('id')->on('users');
         });
     }

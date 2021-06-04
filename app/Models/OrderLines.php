@@ -10,8 +10,9 @@ class OrderLines extends Model
     use HasFactory;
 
     protected $fillable = [
-      'price_vat',
-      'stock'
+        'price_vat',
+        'stock',
+        'done',
     ];
 
     public function orders(){

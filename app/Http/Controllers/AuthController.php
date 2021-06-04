@@ -74,7 +74,7 @@ class AuthController extends Controller
             return response()->json($validator->errors(),400);
         }
         $role = DB::table('roles')->select('id')->where('label', 'user')->get()[0]->id;
-        if($request->role){
+        if($request->role ){
             $role = $request->role;
         }
         try {

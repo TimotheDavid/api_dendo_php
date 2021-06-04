@@ -22,6 +22,7 @@ class OrdersSeeder extends Seeder
                     'amount_vat' => $faker->numberBetween(0,1000),
                     'amount_ttc' => $faker->numberBetween(0,1000),
                     'user' => $faker->numberBetween(1,10),
+                    'done' => $faker->boolean
                 ]);
         }
     }

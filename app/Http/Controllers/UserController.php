@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -20,6 +21,7 @@ class UserController extends Controller
     {
         $user = DB::table('users')
             ->leftJoin('roles', 'users.role', '=', 'roles.id')
+            ->orderBy('id')
             ->get(['users.*', 'roles.label']);
 
         return response()->json([
@@ -46,9 +48,10 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $role = DB::table('roles')->select('label')->where('label','user')->get();
 
-        try{
+
+        $role = DB::table('roles')->select('label')->where('label','user')->get();
+try{
             Product::create([
                 'name' => $request->name,
                 'email' => $request-> email,
@@ -138,8 +141,17 @@ class UserController extends Controller
      */
     public function destroy(User $user, int $id)
     {
+
         try{
-            $user = DB::table('users')->where('id', $id)->delete();
+
+            $orders = DB::table('orders')->where('user', $id)->get();
+
+            foreach ($orders as $order ){
+                DB::table('orders')->where('id', $order->id)->update(['user' => 1]);
+            }
+
+            DB::table('users')->where('id', $id)->delete();
+
             return response()->json(null,204);
 
 
